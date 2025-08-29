@@ -1,11 +1,11 @@
 import {Router} from "express"
-// import postRouter from "./postRouter"
+import postRouter from "./postRouter"
 import userRouter from "./userRouter"
 
 
 const router = Router()
 
-// router.use("/", postRouter)
+router.use("/board", postRouter)
 router.use("/user", userRouter)
 
 export default router
