@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import query from "../queries/queries"
+import query from "src/queries/queries"
 
 interface PassportSession {
   passport?: {

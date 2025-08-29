@@ -1,4 +1,4 @@
-import allControllers from "../controllers/allControllers"
+import allControllers from "src/controllers/allControllers"
 import {Router} from "express"
 import passport from "passport"
 
