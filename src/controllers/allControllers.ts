@@ -32,13 +32,13 @@ async function createUser(req: Request, res: Response) {
 async function updateUser(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { username, email, password, name, address, role } = req.body;
+    const { email, password, name, address, role } = req.body;
 
     if (!id) {
       return res.status(400).json({ error: "Missing user id" });
     }
 
-    const updatedUser = await query.updateUser( Number(id), username, email, password, name, address, role);
+    const updatedUser = await query.updateUser( Number(id), email, password, name, address, role);
 
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found or no data to update" });

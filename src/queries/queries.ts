@@ -10,7 +10,7 @@ async function insertUser(username: string, email: string, password: string, nam
     )
 }
 
-async function updateUser(id: number, username?: string, email?: string, password?: string, name?: string, address?: string, role?: string) {
+async function updateUser(id: number, email?: string, password?: string, name?: string, address?: string, role?: string) {
   const fields: string[] = [];
   const values: any[] = [];
   let idx = 1;
@@ -39,7 +39,6 @@ async function updateUser(id: number, username?: string, email?: string, passwor
   if (fields.length === 0) return null; 
 
   values.push(id);
-  values.push(username);
   const query = `UPDATE users SET ${fields.join(", ")} WHERE id = $${idx} RETURNING *`;
 
   const result = await sql.query(query, values);
