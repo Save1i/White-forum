@@ -135,11 +135,12 @@ async function deleteMessageById(req: Request, res: Response) {
 
 async function addComment(req: Request, res: Response) {
   try {
-    const { postId, content } = req.body;
+    const { content, userid } = req.body;
+    const { postId } = req.params;
     const session = req.session as PassportSession;
     const userId = session.passport?.user as number;
 
-    await query.insertComment(postId, userId, content);
+    await query.insertComment(Number(postId), userId, content);
     res.json({ postId, userId, content });
   } catch (error) {
     console.error("Error adding comment:", error);
@@ -160,11 +161,12 @@ async function getComments(req: Request, res: Response) {
 
 async function toggleLike(req: Request, res: Response) {
   try {
-    const { postId, type } = req.body;
+    const { postId } = req.params;
+    const { type } = req.body;
     const session = req.session as PassportSession;
     const userId = session.passport?.user as number;
 
-    const result = await query.toggleLike(postId, userId, type);
+    const result = await query.toggleLike(Number(postId), userId, type);
     res.json(result);
   } catch (error) {
     console.error("Error toggling like:", error);
@@ -174,11 +176,11 @@ async function toggleLike(req: Request, res: Response) {
 
 async function toggleFavorite(req: Request, res: Response) {
   try {
-    const { postId } = req.body;
+    const { postId } = req.params;
     const session = req.session as PassportSession;
     const userId = session.passport?.user as number;
 
-    const result = await query.toggleFavorite(postId, userId);
+    const result = await query.toggleFavorite(Number(postId), userId);
     res.json(result);
   } catch (error) {
     console.error("Error toggling favorite:", error);
