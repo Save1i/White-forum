@@ -61,10 +61,8 @@ async function getUserById(id: number) {
     return rows
 }
 
-
-
 async function messageGet() {
-    const rows = await sql.query("SELECT posts.user_id, title, content, username FROM posts LEFT JOIN USERS ON USERS.ID = posts.user_id") //добавить лайки избранное и приоритет
+    const rows = await sql.query("SELECT posts.user_id, posts.id, title, content, username FROM posts LEFT JOIN USERS ON USERS.ID = posts.user_id") //добавить лайки избранное и приоритет
     return rows
 }
 

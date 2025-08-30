@@ -7,12 +7,14 @@ import passport from "passport"
 import { Strategy as LocalStrategy } from 'passport-local';
 import queries from "@/queries/queries";
 import {config} from "dotenv"
+import cors from "cors"
 
 config()
 const app = express()
 
 
 async function main() {
+    app.use(cors())
     app.use(express.json())
     app.use(express.urlencoded({ extended: true }));
     app.use(express.static('public'));
