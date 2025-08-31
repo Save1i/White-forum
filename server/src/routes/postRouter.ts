@@ -4,7 +4,7 @@ import allControllers from "src/controllers/allControllers";
 const router = Router();
 
 router.get("/", allControllers.getAllMessages); 
-router.get("/:id", allControllers.getMessageById);
+router.get("/:postId", allControllers.getMessageById);
 router.post("/create", allControllers.createMessagePost);
 router.delete("/:id", allControllers.deleteMessageById);
 

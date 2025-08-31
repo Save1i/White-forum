@@ -57,18 +57,28 @@ async function getUserByName(username: string) {
 }
 
 async function getUserById(id: number) {
-    const rows = await sql.query("SELECT * FROM users WHERE id=$1", [id])
-    return rows
+  if (isNaN(id)) throw new Error("Invalid userId");
+  const rows = await sql.query(
+    "SELECT id, username FROM users WHERE id = $1",
+    [id]
+  );
+  return rows;
 }
 
 async function messageGet() {
     const rows = await sql.query("SELECT posts.user_id, posts.id, title, content, username FROM posts LEFT JOIN USERS ON USERS.ID = posts.user_id") //добавить лайки избранное и приоритет
     return rows
 }
-
-async function messageGetById(id: number) {
-    const rows = await sql.query("SELECT * FROM posts WHERE id=$1", [id]);
-    return rows
+  
+async function messageGetById(postId: number) {
+    const rows = await sql.query(
+        `SELECT p.user_id, p.id, p.title, p.content, u.username
+         FROM posts p
+         LEFT JOIN users u ON u.id = p.user_id
+         WHERE p.id = $1`,
+        [postId]
+    );
+    return rows;
 }
 
 async function messageDeleteById(id: number) {

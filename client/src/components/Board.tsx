@@ -2,8 +2,8 @@ import axios from "axios"
 import Message from "./Message"
 import { useEffect, useState } from "react"
 import { Spin } from "antd";
+import type { Msg } from "../types";
 
-type Msg = { id: number; username: string; title: string; content: string };
 
 
 const Board = () => {
@@ -20,16 +20,11 @@ const Board = () => {
         fetchMessages()
     }, [])
 
-    const onClick = (e: React.MouseEvent) => {
-        e.preventDefault();
-        console.log('click', e)
-    }
-
     return (
     <div className="flex items-center justify-start w-full h-screen column flex-col pt-20">
         {
             messages ? (messages.map((message: Msg) => (
-                <Message key={message.id} message={message} onClick={(e) => onClick(e)}/>
+                <Message key={message.id} message={message}/>
             ))) : (<Spin/>)
         }
     </div>

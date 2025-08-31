@@ -112,10 +112,10 @@ async function getAllMessages(req: Request, res: Response) {
 
 async function getMessageById(req: Request, res: Response) {
   try {
-    const { id } = req.params;
-    const message = await query.messageGetById(Number(id));
+    const { postId } = req.params;
+    const message = await query.messageGetById(Number(postId));
     if (!message) return res.status(404).json({ error: "Post not found" });
-    res.json(message);
+    res.json(message[0]);
   } catch (error) {
     console.error("Error fetching post:", error);
     return res.status(500).json({ error: "Server error" });

@@ -1,17 +1,33 @@
+import { useEffect, useState } from "react"
+import Comments from "../components/Comments"
+import Message from "../components/Message"
+import NavBar from "../components/NavBar"
 import axios from "axios"
-import { useEffect } from "react"
+import { useParams } from "react-router"
+import { Spin } from "antd"
 
 const MessageAndComments = () => {
-        const fetchMessages = () => {
-        axios.get(`${import.meta.env.VITE_API_URL}board/:postId/comments`).then(response => {
-            console.log(response.data)
-        })
+    const { postId } = useParams<{ postId: string }>();
 
-        useEffect(()=> {
-            fetchMessages()
-        }, [])
+    const [message, setMessage] = useState(null)
+
+    const fetchMessages = () => {
+        axios.get(`${import.meta.env.VITE_API_URL}board/${postId}`).then(response => {
+            console.log(response.data, "message")
+            setMessage(response.data)
+        })
     }
-    return (<p>Hello</p>)
+
+    useEffect(() => {
+        fetchMessages()
+    }, [])
+    return (<>
+        <NavBar/>
+        {
+            message ? (<Message message={message}/>) : <Spin/>
+        }   
+        <Comments postId={postId}/>
+    </>)
 }
 
 export default MessageAndComments
