@@ -14,7 +14,11 @@ const app = express()
 
 
 async function main() {
-    app.use(cors())
+    app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+    }));
+
     app.use(express.json())
     app.use(express.urlencoded({ extended: true }));
     app.use(express.static('public'));
@@ -52,7 +56,7 @@ async function main() {
             return done(null, false, { message: "Incorrect username" });
         }
 
-        const match = password === user.password
+        const match = password === user.password_hash
 
         if (!match) {
             return done(null, false, { message: "Incorrect password" });
