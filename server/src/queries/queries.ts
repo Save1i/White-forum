@@ -177,24 +177,25 @@ async function commentGet(postId: number) {
 }
 
 async function toggleLike(postId: number, userId: number) {
-  const result = await sql.query(
+  const existing = await sql.query(
     "SELECT * FROM likes WHERE post_id = $1 AND user_id = $2",
     [postId, userId]
   );
 
-  if (result.length > 0) {
-      await sql.query(
-        "DELETE FROM likes WHERE post_id = $1 AND user_id = $2",
-        [postId, userId]
-      );
-      return { action: "deleted like" };
+  if (existing.length > 0) {
+    await sql.query("DELETE FROM likes WHERE post_id = $1 AND user_id = $2", [postId, userId]);
   } else {
-    await sql.query(
-      "INSERT INTO likes (post_id, user_id) VALUES ($1, $2)",
-      [postId, userId]
-    );
-    return { action: "inserted like" };
+    await sql.query("INSERT INTO likes (post_id, user_id) VALUES ($1, $2)", [postId, userId]);
   }
+
+  const rows = await sql.query(
+    `SELECT 
+       EXISTS (SELECT 1 FROM likes WHERE post_id = $1 AND user_id = $2) AS liked_by_user,
+       (SELECT COUNT(*) FROM likes WHERE post_id = $1) AS like_count`,
+    [postId, userId]
+  );
+
+  return rows[0];
 }
 
 async function toggleFavorite(postId: number, userId: number) {
