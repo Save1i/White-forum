@@ -12,7 +12,9 @@ const MessageAndComments = () => {
     const [message, setMessage] = useState(null)
 
     const fetchMessages = () => {
-        axios.get(`${import.meta.env.VITE_API_URL}board/${postId}`).then(response => {
+        axios.get(`${import.meta.env.VITE_API_URL}board/${postId}`, {
+            withCredentials: true
+        }).then(response => {
             console.log(response.data, "message")
             setMessage(response.data)
         })
@@ -21,11 +23,16 @@ const MessageAndComments = () => {
     useEffect(() => {
         fetchMessages()
     }, [])
+    
     return (<>
         <NavBar/>
+        <div className="flex items-center justify-start w-full column flex-col pt-20">
         {
-            message ? (<Message message={message}/>) : <Spin/>
+            message 
+                ? (<Message message={message}/>) 
+                : <Spin/>
         }   
+        </div>
         <Comments postId={postId}/>
     </>)
 }
