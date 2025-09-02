@@ -3,10 +3,14 @@ import { UserOutlined, LikeOutlined, StarOutlined, FireOutlined, StarFilled, Lik
 import { useLocation, useNavigate } from "react-router";
 import type { Msg } from "../types";
 import axios from "axios";
+import { useState } from "react";
 
 const Message = ({ message }: { message: Msg }) => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [liked, setLiked] = useState(message.liked_by_user);
+  const [likeCount, setLikeCount] = useState(message.like_count ?? 0);
 
   const handleClick = () => {
     const target = `/board/${message.id}/comments`;
@@ -15,12 +19,19 @@ const Message = ({ message }: { message: Msg }) => {
     }
   };
 
-  const toggleLike = () => {
+  const toggleLike = (e: React.MouseEvent) => {
+    e.stopPropagation()
     axios.post(`${import.meta.env.VITE_API_URL}board/${message.id}/like`, 
       {}, // empty body
       {withCredentials: true}
     ).then(response => {
       console.log(response.data)
+
+      const { liked_by_user, like_count } = response.data;
+      console.log(liked_by_user)
+
+      setLiked(liked_by_user);
+      setLikeCount(like_count);
     }).catch(err => {
       console.error("Ошибка при лайке:", err);
     });
@@ -44,11 +55,11 @@ const Message = ({ message }: { message: Msg }) => {
               <Button
                 type="text"
                 icon={
-                message.liked_by_user 
+                liked 
                   ? <LikeFilled className="!text-blue-500"/>
                   : <LikeOutlined className="!text-gray-400"/>}
               />
-              <span>{message.like_count ?? 0}</span>
+              <span>{likeCount ?? 0}</span>
             </div>
           </Tooltip>,
           <Tooltip title="В избранное" key="star">
