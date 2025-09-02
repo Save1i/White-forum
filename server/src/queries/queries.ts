@@ -189,7 +189,7 @@ async function toggleLike(postId: number, userId: number) {
   }
 
   const rows = await sql.query(
-    `SELECT 
+    `SELECT   
        EXISTS (SELECT 1 FROM likes WHERE post_id = $1 AND user_id = $2) AS liked_by_user,
        (SELECT COUNT(*) FROM likes WHERE post_id = $1) AS like_count`,
     [postId, userId]
@@ -209,14 +209,21 @@ async function toggleFavorite(postId: number, userId: number) {
       "DELETE FROM favorites WHERE post_id = $1 AND user_id = $2",
       [postId, userId]
     );
-    return { action: "removed" };
   } else {
     await sql.query(
       "INSERT INTO favorites (post_id, user_id) VALUES ($1, $2)",
       [postId, userId]
     );
-    return { action: "inserted" };
   }
+
+    const rows = await sql.query(
+    `SELECT   
+       EXISTS (SELECT 1 FROM favorites WHERE post_id = $1 AND user_id = $2) AS favorited_by_user,
+       (SELECT COUNT(*) FROM favorites WHERE post_id = $1) AS favorite_count`,
+    [postId, userId]
+  );
+
+  return rows[0];
 }
 
 
