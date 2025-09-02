@@ -49,8 +49,7 @@ async function main() {
     async (username, password, done) => {
             console.log("LocalStrategy called:", username); 
         try {
-        const rows  = await queries.getUserByName(username)
-        const user = rows[0];
+        const user  = await queries.getUserByName(username)
 
         if (!user) {
             return done(null, false, { message: "Incorrect username" });
@@ -68,22 +67,39 @@ async function main() {
     })
     );
 
-    passport.serializeUser((user: Express.User, done) => {
-    console.log("Serializing user:", user);
-        done(null, (user as any).id);
+    passport.serializeUser((user: any, done) => {
+        if (!user || !user.id) {
+            console.error("serializeUser: invalid user object", user);
+            return done(new Error("Invalid user object"));
+        }
+        const userId = parseInt(user.id, 10);
+        done(null, userId);
     });
 
-    passport.deserializeUser(async (id: number, done) => {
-        try {
-            const user = await queries.getUserById(id);
-            if (!user) {
-                return done(null, false);
-            }
-            done(null, user);
-        } catch (err) {
-            done(err);
+    passport.deserializeUser(async (id: any, done) => {
+    console.log("deserializeUser called with:", id, typeof id);
+
+    try {
+        const userId = Number(id);
+        if (!id || isNaN(userId)) {
+        console.error("deserializeUser: invalid id", id);
+        return done(null, false);
         }
+
+        const user = await queries.getUserById(userId);
+        if (!user) {
+        return done(null, false);
+        }
+
+        done(null, user);
+    } catch (err) {
+        console.error("Error in deserializeUser:", err);
+        done(err);
+    }
     });
+
+
+
     app.use("/", router)
 
     app.all("/{*splat}", (req: Request, res: Response) => {
