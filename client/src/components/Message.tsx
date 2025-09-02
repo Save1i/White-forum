@@ -12,6 +12,9 @@ const Message = ({ message }: { message: Msg }) => {
   const [liked, setLiked] = useState(message.liked_by_user);
   const [likeCount, setLikeCount] = useState(message.like_count ?? 0);
 
+  const [favorite, setFavorite] = useState(message.favorited_by_user);
+  const [favoriteCount, setFavoriteCount] = useState(message.favorite_count ?? 0);
+
   const handleClick = () => {
     const target = `/board/${message.id}/comments`;
     if (location.pathname !== target) {
@@ -34,6 +37,23 @@ const Message = ({ message }: { message: Msg }) => {
       setLikeCount(like_count);
     }).catch(err => {
       console.error("Ошибка при лайке:", err);
+    });
+  }
+
+  const toggleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    axios.post(`${import.meta.env.VITE_API_URL}board/${message.id}/favorite`, 
+      {}, // empty body
+      {withCredentials: true}
+    ).then(response => {
+      console.log(response.data)
+
+      const { favorited_by_user, favorite_count } = response.data;
+
+      setFavorite(favorited_by_user);
+      setFavoriteCount(favorite_count);
+    }).catch(err => {
+      console.error("Ошибка при добавлении в избранное:", err);
     });
   }
 
@@ -63,13 +83,13 @@ const Message = ({ message }: { message: Msg }) => {
             </div>
           </Tooltip>,
           <Tooltip title="В избранное" key="star">
-            <div className="flex items-center justify-center gap-1">
+            <div className="flex items-center justify-center gap-1" onClick={toggleFavorite}>
               <Button type="text" icon={
-                message.favorited_by_user
+                favorite
                   ? <StarFilled className="!text-yellow-500" />
                   : <StarOutlined className="!text-gray-400" />
               } />
-              <span>{message.favorite_count ?? 0}</span>
+              <span>{favoriteCount ?? 0}</span>
             </div>
           </Tooltip>,
           <Tooltip title="Приоритет" key="priority">
