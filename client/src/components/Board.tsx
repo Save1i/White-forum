@@ -10,7 +10,9 @@ const Board = () => {
     const [messages, setMessages] = useState<Msg[] | null>(null)
 
     const fetchMessages = () => {
-        axios.get(`${import.meta.env.VITE_API_URL}board`).then(response => {
+        axios.get(`${import.meta.env.VITE_API_URL}board`, {
+            withCredentials: true
+        }).then(response => {
             console.log(response.data)
             setMessages(response.data)
         })
