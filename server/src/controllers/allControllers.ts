@@ -61,24 +61,36 @@ async function getAllUsers(req: Request, res: Response) {
   }
 }
 
-async function getUserById(req: Request, res: Response) {
+export async function getOneUserById(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const user = await query.getUserById(Number(id));
-    if (!user) return res.status(404).json({ error: "User not found" });
+    const userId = parseInt(id, 10)
+    if (!id) {
+      return res.status(400).json({ error: "Missing userId" });
+    }
+
+    const user = await query.getUserById(userId);
+
+    console.log(user)
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
     res.json(user);
-  } catch (error) {
-    console.error("Error fetching user by ID:", error);
-    return res.status(500).json({ error: "Server error" });
+  } catch (err) {
+    console.error("Error fetching user by ID:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
+
 
 async function getUserByName(req: Request, res: Response) {
   try {
     const { username } = req.params;
     const user = await query.getUserByName(username);
     if (!user) return res.status(404).json({ error: "User not found" });
-    res.json(user);
+    res.json(user)
   } catch (error) {
     console.error("Error fetching user by name:", error);
     return res.status(500).json({ error: "Server error" });
@@ -101,8 +113,12 @@ async function createMessagePost(req: Request, res: Response) {
 
 async function getAllMessages(req: Request, res: Response) {
   try {
-    const isAuth = req.isAuthenticated() // не нужно
-    const messages = await query.messageGet();
+    const session = req.session as PassportSession;
+    const userId = session.passport?.user as number;
+
+    console.log(userId, "USERID")
+
+    const messages = await query.messageGet(userId || 0);
     res.json(messages);
   } catch (error) {
     console.error("Error fetching posts:", error);
@@ -112,8 +128,15 @@ async function getAllMessages(req: Request, res: Response) {
 
 async function getMessageById(req: Request, res: Response) {
   try {
+    const session = req.session as PassportSession;
+    const userId = session.passport?.user as number;
+
     const { postId } = req.params;
-    const message = await query.messageGetById(Number(postId));
+    const pId = parseInt(postId, 10)
+
+    console.log(userId, pId)
+
+    const message = await query.messageGetById(userId || 0, pId);
     if (!message) return res.status(404).json({ error: "Post not found" });
     res.json(message[0]);
   } catch (error) {
@@ -135,7 +158,7 @@ async function deleteMessageById(req: Request, res: Response) {
 
 async function addComment(req: Request, res: Response) {
   try {
-    const { content, userid } = req.body;
+    const { content} = req.body;
     const { postId } = req.params;
     const session = req.session as PassportSession;
     const userId = session.passport?.user as number;
@@ -162,11 +185,12 @@ async function getComments(req: Request, res: Response) {
 async function toggleLike(req: Request, res: Response) {
   try {
     const { postId } = req.params;
-    const { type } = req.body;
     const session = req.session as PassportSession;
     const userId = session.passport?.user as number;
 
-    const result = await query.toggleLike(Number(postId), userId, type);
+    console.log(userId)
+
+    const result = await query.toggleLike(Number(postId), userId);
     res.json(result);
   } catch (error) {
     console.error("Error toggling like:", error);
@@ -192,7 +216,7 @@ export default {
   createUser,
   updateUser,
   getAllUsers,
-  getUserById,
+  getOneUserById,
   getUserByName,
 
   createMessagePost,
