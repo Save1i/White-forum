@@ -1,38 +1,77 @@
-import { Avatar, Card, Space } from "antd"
-import { UserOutlined } from '@ant-design/icons'
+import { Avatar, Card, Button, Tooltip, Tag } from "antd";
+import { UserOutlined, LikeOutlined, StarOutlined, FireOutlined, StarFilled, LikeFilled } from '@ant-design/icons';
 import { useLocation, useNavigate } from "react-router";
 import type { Msg } from "../types";
+import axios from "axios";
 
-const Message = ({message} : {message: Msg} )=> {
+const Message = ({ message }: { message: Msg }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const handleClick = () => {
+  const handleClick = () => {
     const target = `/board/${message.id}/comments`;
     if (location.pathname !== target) {
       navigate(target);
     }
   };
 
-    console.log(message, "fdfdfdfdf")
-    return (
-         <Space direction="vertical" size={16} onClick={handleClick}>
-            <Card title={
-                <div className="flex items-center gap-3">
-                    <Avatar size="large" icon={<UserOutlined />} />
-                    <span>{message.username}</span>
-                </div>
-            }
-            style={{ 
-                width: 300 
-            }}
-            >
-                <p className=" text-2xl mb-3 text-center">{message.title}</p>
-                <p className="">{message.content}</p>
-            </Card>
-        </Space>
-    )
-}
+  const toggleLike = () => {
+    axios.post(`${import.meta.env.VITE_API_URL}board/${message.id}/like`, 
+      {}, // empty body
+      {withCredentials: true}
+    ).then(response => {
+      console.log(response.data)
+    }).catch(err => {
+      console.error("Ошибка при лайке:", err);
+    });
+  }
+
+  return (
+      <Card
+        onClick={handleClick}
+        title={
+          <div className="flex items-center gap-3">
+            <Avatar size="large" icon={<UserOutlined />} />
+            <span className="font-semibold">{message.username}</span>
+          </div>
+        }
+        style={{
+          width: 350,
+        }}
+        actions={[
+          <Tooltip title="Лайк" key="like">
+            <div className="flex items-center justify-center gap-1" onClick={toggleLike}>
+              <Button
+                type="text"
+                icon={
+                message.liked_by_user 
+                  ? <LikeFilled className="!text-blue-500"/>
+                  : <LikeOutlined className="!text-gray-400"/>}
+              />
+              <span>{message.like_count ?? 0}</span>
+            </div>
+          </Tooltip>,
+          <Tooltip title="В избранное" key="star">
+            <div className="flex items-center justify-center gap-1">
+              <Button type="text" icon={
+                message.favorited_by_user
+                  ? <StarFilled className="!text-yellow-500" />
+                  : <StarOutlined className="!text-gray-400" />
+              } />
+              <span>{message.favorite_count ?? 0}</span>
+            </div>
+          </Tooltip>,
+          <Tooltip title="Приоритет" key="priority">
+            <Tag color="red" icon={<FireOutlined />}>
+              {message.priority ?? 0}
+            </Tag>
+          </Tooltip>,
+        ]}
+      >
+        <p className="text-2xl mb-3 text-center">{message.title}</p>
+        <p>{message.content}</p>
+      </Card>
+  );
+};
 
 export default Message;
