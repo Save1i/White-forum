@@ -1,7 +1,7 @@
 import { Spin } from "antd";
 import axios from "axios"
 import { useEffect, useState } from "react"
-import Comment from "./comment";
+import Comment from "./Comment";
 import type { Comm } from "../types";
 
 
@@ -23,7 +23,7 @@ const Comments = ({postId}: {postId: string | undefined}) => {
     }, [])
 
   return (
-    <div className="flex items-center justify-start w-full h-screen column flex-col pt-20">
+    <div className="flex items-center justify-start w-full h-screen column flex-col pt-5">
         {
             comments ? (comments.map((comment) => (
                 <Comment key={comment.id} comment={comment}/>
