@@ -1,5 +1,6 @@
 import {neon} from "@neondatabase/serverless"
 import {config} from "dotenv"
+import { User } from "types";
 config()
 const sql = neon(process.env.DATABASE_URL as string);
 
@@ -50,33 +51,101 @@ async function getAllUsers() {
     return users
 }
 
-async function getUserByName(username: string) {
+async function getUserByName(username: string): Promise<User | null> {
     const rows = await sql.query("SELECT * FROM users WHERE username=$1", [username])
     console.log(rows)
-    return rows
+    const users = rows as User[];
+
+    return users[0] || null;
 }
 
-async function getUserById(id: number) {
-  if (isNaN(id)) throw new Error("Invalid userId");
+export async function getUserById(id: number): Promise<User | null> {
   const rows = await sql.query(
-    "SELECT id, username FROM users WHERE id = $1",
+    "SELECT id, username, email, password_hash, name, address, role FROM users WHERE id = $1",
     [id]
   );
-  return rows;
+
+  const users = rows as User[];
+
+  return users[0] || null;
 }
 
-async function messageGet() {
-    const rows = await sql.query("SELECT posts.user_id, posts.id, title, content, username FROM posts LEFT JOIN USERS ON USERS.ID = posts.user_id") //добавить лайки избранное и приоритет
-    return rows
+async function messageGet(usetId: number) {
+  const rows = await sql.query(`
+    SELECT 
+      posts.id,
+      posts.user_id,
+      posts.title,
+      posts.content,
+      posts.priority,
+      users.username,
+
+      -- общее количество лайков
+      COUNT(DISTINCT likes.id) AS like_count,
+
+      -- общее количество добавлений в избранное
+      COUNT(DISTINCT favorites.id) AS favorite_count,
+
+      -- лайкал ли именно текущий пользователь
+      CASE WHEN EXISTS (
+        SELECT id FROM likes l2 
+        WHERE l2.post_id = posts.id AND l2.user_id = $1
+      ) THEN true ELSE false END AS liked_by_user,
+
+      -- добавлял ли именно текущий пользователь в избранное
+      CASE WHEN EXISTS (
+        SELECT 1 FROM favorites f2 
+        WHERE f2.post_id = posts.id AND f2.user_id = $1
+      ) THEN true ELSE false END AS favorited_by_user
+
+    FROM posts
+    LEFT JOIN users ON users.id = posts.user_id
+    LEFT JOIN likes ON likes.post_id = posts.id
+    LEFT JOIN favorites ON favorites.post_id = posts.id
+    GROUP BY posts.id, users.username
+    ORDER BY posts.priority DESC
+  `, [usetId]);
+
+  return rows;
 }
   
-async function messageGetById(postId: number) {
-    const rows = await sql.query(
-        `SELECT p.user_id, p.id, p.title, p.content, u.username
-         FROM posts p
-         LEFT JOIN users u ON u.id = p.user_id
-         WHERE p.id = $1`,
-        [postId]
+async function messageGetById(userId: number, postId: number) {
+    const rows = await sql.query(`
+      SELECT 
+      posts.id,
+      posts.user_id,
+      posts.title,
+      posts.content,
+      posts.priority,
+      users.username,
+
+      -- общее количество лайков
+      COUNT(DISTINCT likes.id) AS like_count,
+
+      -- общее количество добавлений в избранное
+      COUNT(DISTINCT favorites.id) AS favorite_count,
+
+      -- лайкал ли именно текущий пользователь
+      CASE WHEN EXISTS (
+        SELECT id FROM likes l2 
+        WHERE l2.post_id = posts.id AND l2.user_id = $1
+      ) THEN true ELSE false END AS liked_by_user,
+
+      -- добавлял ли именно текущий пользователь в избранное
+      CASE WHEN EXISTS (
+        SELECT 1 FROM favorites f2 
+        WHERE f2.post_id = posts.id AND f2.user_id = $1
+      ) THEN true ELSE false END AS favorited_by_user
+
+    FROM posts
+    LEFT JOIN users ON users.id = posts.user_id
+    LEFT JOIN likes ON likes.post_id = posts.id
+    LEFT JOIN favorites ON favorites.post_id = posts.id
+    WHERE posts.id = $2
+    GROUP BY posts.id, users.username
+    ORDER BY posts.priority DESC
+  `,
+        [userId, postId]
     );
     return rows;
 }
@@ -107,34 +176,24 @@ async function commentGet(postId: number) {
     return rows
 }
 
-async function toggleLike(postId: number, userId: number, type: "like" | "dislike") {
+async function toggleLike(postId: number, userId: number) {
   const result = await sql.query(
-    "SELECT type FROM likes WHERE post_id = $1 AND user_id = $2",
+    "SELECT * FROM likes WHERE post_id = $1 AND user_id = $2",
     [postId, userId]
   );
 
   if (result.length > 0) {
-    const existingType = result[0].type;
-
-    if (existingType === type) {
       await sql.query(
         "DELETE FROM likes WHERE post_id = $1 AND user_id = $2",
         [postId, userId]
       );
-      return { action: "removed", type };
-    } else {
-      await sql.query(
-        "UPDATE likes SET type = $3 WHERE post_id = $1 AND user_id = $2",
-        [postId, userId, type]
-      );
-      return { action: "updated", type };
-    }
+      return { action: "deleted like" };
   } else {
     await sql.query(
-      "INSERT INTO likes (post_id, user_id, type) VALUES ($1, $2, $3)",
-      [postId, userId, type]
+      "INSERT INTO likes (post_id, user_id) VALUES ($1, $2)",
+      [postId, userId]
     );
-    return { action: "inserted", type };
+    return { action: "inserted like" };
   }
 }
 
