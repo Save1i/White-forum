@@ -5,7 +5,7 @@ import Comment from "./Comment";
 import type { Comm } from "../types";
 
 
-const Comments = ({postId}: {postId: string | undefined}) => {
+const Comments = ({postId, newComment}: {postId: string | undefined, newComment: boolean}) => {
 
     const [comments, setCommets] = useState<Comm[] | null>(null)
 
@@ -20,7 +20,7 @@ const Comments = ({postId}: {postId: string | undefined}) => {
     
     useEffect(() => {
         fetchComments()
-    }, [])
+    }, [newComment])
 
   return (
     <div className="flex items-center justify-start w-full h-screen column flex-col pt-5">
