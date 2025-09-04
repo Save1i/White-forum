@@ -172,7 +172,7 @@ async function insertComment(postId: number, userId: number, content: string) {
 }
 
 async function commentGet(postId: number) {
-    const rows = await sql.query("SELECT * FROM comments WHERE post_id=$1", [postId])
+    const rows = await sql.query("SELECT comments.id, comments.post_id, comments.user_id, comments.content, comments.created_at, users.username FROM comments LEFT JOIN USERS ON users.id = comments.user_id WHERE post_id=$1 ORDER by comments.id DESC", [postId])
     return rows
 }
 

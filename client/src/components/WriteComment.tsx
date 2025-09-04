@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
-import { Input, Button, Card } from "antd";
+import { Input, Button, Avatar } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
 
@@ -28,15 +29,18 @@ const WriteComment = ({ postId, setSendComment }: { postId: string | undefined, 
   };
 
   return (
-    <Card className="w-full max-w-xl mx-auto mt-4 shadow-md rounded-2xl">
-      <h3 className="text-lg font-semibold mb-2">Написать комментарий</h3>
+    <div className="w-2xs md:w-2xl mx-auto flex flex-col p-3 border-1 border-solid border-gray-100 rounded-xl mt-3">
+      <div className="flex items-center gap-3 mb-8">
+        <Avatar size="large" icon={<UserOutlined />} className="shrink-0"/>
       <TextArea
-        rows={3}
-        placeholder="Введите ваш комментарий..."
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        className="mb-3"
-      />
+      placeholder="Введите ваш комментарий..."
+      value={comment}
+      showCount
+      maxLength={100}
+      onChange={(e) => setComment(e.target.value)}
+      style={{ height: 60, resize: 'none' }}
+    />
+      </div>
       <div className="flex justify-end">
         <Button 
           type="primary" 
@@ -47,7 +51,7 @@ const WriteComment = ({ postId, setSendComment }: { postId: string | undefined, 
           Отправить
         </Button>
       </div>
-    </Card>
+    </div>
   );
 };
 

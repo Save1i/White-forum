@@ -16,5 +16,6 @@ export type Comm = {
     created_at: string; 
     id: number; 
     post_id: number; 
-    user_id: number
+    user_id: number;
+    username: string;
 }; 

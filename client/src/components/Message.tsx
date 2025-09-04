@@ -1,19 +1,42 @@
-import { Avatar, Card, Button, Tooltip, Tag } from "antd";
+import { Avatar, Card, Button, Tooltip, Tag, Skeleton } from "antd";
 import { UserOutlined, LikeOutlined, StarOutlined, FireOutlined, StarFilled, LikeFilled } from '@ant-design/icons';
 import { useLocation, useNavigate } from "react-router";
 import type { Msg } from "../types";
 import axios from "axios";
 import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 
 const Message = ({ message }: { message: Msg }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const {loading} = useAuth()
 
   const [liked, setLiked] = useState(message.liked_by_user);
   const [likeCount, setLikeCount] = useState(message.like_count ?? 0);
 
   const [favorite, setFavorite] = useState(message.favorited_by_user);
   const [favoriteCount, setFavoriteCount] = useState(message.favorite_count ?? 0);
+
+
+
+
+  <Card
+  className="w-2xs md:w-2xl"
+  title={
+    <div className="flex items-center gap-3">
+      <Skeleton.Avatar active size="large" shape="circle" />
+      <Skeleton.Input active size="small" style={{ width: 120 }} />
+    </div>
+  }
+  actions={[
+    <Skeleton.Button active size="small" shape="round" key="like" />,
+    <Skeleton.Button active size="small" shape="round" key="star" />,
+    <Skeleton.Button active size="small" shape="round" key="priority" />
+  ]}
+>
+  <Skeleton active paragraph={{ rows: 2 }} />
+</Card>
+
 
   const handleClick = () => {
     const target = `/board/${message.id}/comments`;
@@ -59,6 +82,7 @@ const Message = ({ message }: { message: Msg }) => {
 
   return (
       <Card
+        className="w-2xs md:w-2xl cursor-pointer"
         onClick={handleClick}
         title={
           <div className="flex items-center gap-3">
@@ -66,9 +90,6 @@ const Message = ({ message }: { message: Msg }) => {
             <span className="font-semibold">{message.username}</span>
           </div>
         }
-        style={{
-          width: 350,
-        }}
         actions={[
           <Tooltip title="Лайк" key="like">
             <div className="flex items-center justify-center gap-1" onClick={toggleLike}>
@@ -99,7 +120,7 @@ const Message = ({ message }: { message: Msg }) => {
           </Tooltip>,
         ]}
       >
-        <p className="text-2xl mb-3 text-center">{message.title}</p>
+        <p className="text-2xl mb-3">{message.title}</p>
         <p>{message.content}</p>
       </Card>
   );

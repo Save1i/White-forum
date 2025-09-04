@@ -1,27 +1,38 @@
-import { UserOutlined } from "@ant-design/icons"
-import { Avatar, Card, Space } from "antd"
-import type { Comm } from "../types"
+import { Card, Avatar, Skeleton } from "antd";
+import { UserOutlined } from "@ant-design/icons";
+import { useAuth } from "../hooks/useAuth";
 
-
-const Comment = ({comment}: {comment: Comm}) => {
-
-
-    return (
-        <Space direction="vertical" size={16}>
-            <Card title={
-                <div className="flex items-center gap-3">
-                    <Avatar size="large" icon={<UserOutlined />} />
-                    <span>{comment.id}</span>
-                </div>
-            }
-            style={{ 
-                width: 300 
-            }}
-            >
-                <p className="">{comment.content}</p>
-            </Card>
-        </Space>
-    )
+interface CommentCardProps {
+  comment?: { username: string; content: string };
 }
 
-export default Comment
+const CommentCard = ({ comment }: CommentCardProps) => {
+    const { loading} = useAuth()
+  return (
+    <Card
+      className="w-2xs md:w-2xl"
+      title={
+        <div className="flex items-center gap-3">
+          {loading ? (
+            <Skeleton.Avatar active size="large" shape="circle" />
+          ) : (
+            <Avatar size="large" icon={<UserOutlined />} />
+          )}
+          {loading ? (
+            <Skeleton.Input active size="small" style={{ width: 120 }} />
+          ) : (
+            <span>{comment?.username}</span>
+          )}
+        </div>
+      }
+    >
+      {loading ? (
+        <Skeleton active paragraph={{ rows: 2 }} title={false} />
+      ) : (
+        <p>{comment?.content}</p>
+      )}
+    </Card>
+  );
+};
+
+export default CommentCard;

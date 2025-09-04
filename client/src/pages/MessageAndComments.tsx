@@ -4,40 +4,50 @@ import Message from "../components/Message"
 import NavBar from "../components/NavBar"
 import axios from "axios"
 import { useParams } from "react-router"
-import { Spin } from "antd"
+import { Skeleton, Card } from "antd"
 import WriteComment from "../components/WriteComment"
+import type { Msg } from "../types"
 
 const MessageAndComments = () => {
-    const { postId } = useParams<{ postId: string }>();
+  const { postId } = useParams<{ postId: string }>();
 
-    const [message, setMessage] = useState(null)
-    const [newComment, setNewComment] = useState(false)
+  const [message, setMessage] = useState<Msg | null>(null)
+  const [newComment, setNewComment] = useState(false)
 
-    const fetchMessages = () => {
-        axios.get(`${import.meta.env.VITE_API_URL}board/${postId}`, {
-            withCredentials: true
-        }).then(response => {
-            console.log(response.data, "message")
-            setMessage(response.data)
-        })
-    }
+  const fetchMessage = () => {
+    axios.get(`${import.meta.env.VITE_API_URL}board/${postId}`, {
+      withCredentials: true,
+    }).then(response => {
+      setMessage(response.data)
+    }).catch(err => {
+      console.error("Ошибка при загрузке сообщения:", err)
+    })
+  }
 
-    useEffect(() => {
-        fetchMessages()
-    }, [])
-    
-    return (<>
-        <NavBar/>
-        <div className="flex items-center justify-start w-full column flex-col pt-20">
-        {
-            message 
-                ? (<Message message={message}/>) 
-                : <Spin/>
-        }   
-        <WriteComment postId={postId} setSendComment={setNewComment}/>
-        </div>
-        <Comments postId={postId} newComment={newComment}/>
-    </>)
+  useEffect(() => {
+    fetchMessage()
+  }, [])
+
+  const skeleton = (
+    <Card className="w-2xs md:w-2xl mb-4">
+      <div className="flex items-center gap-3 mb-3">
+        <Skeleton.Avatar active size="large" shape="circle" />
+        <Skeleton.Input active size="small" style={{ width: 120 }} />
+      </div>
+      <Skeleton active paragraph={{ rows: 2 }} />
+    </Card>
+  )
+
+  return (
+    <>
+      <NavBar />
+      <div className="flex items-center justify-start w-full flex-col pt-10">
+        {message ? <Message message={message} /> : skeleton}
+        <WriteComment postId={postId} setSendComment={setNewComment} />
+      </div>
+      <Comments postId={postId} newComment={newComment} />
+    </>
+  )
 }
 
 export default MessageAndComments

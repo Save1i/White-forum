@@ -23,7 +23,7 @@ const Comments = ({postId, newComment}: {postId: string | undefined, newComment:
     }, [newComment])
 
   return (
-    <div className="flex items-center justify-start w-full h-screen column flex-col pt-5">
+    <div className="flex items-center justify-start gap-3 w-full h-screen column flex-col pt-5">
         {
             comments ? (comments.map((comment) => (
                 <Comment key={comment.id} comment={comment}/>
