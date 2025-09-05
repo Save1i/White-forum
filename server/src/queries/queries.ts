@@ -103,7 +103,7 @@ async function messageGet(usetId: number) {
     LEFT JOIN likes ON likes.post_id = posts.id
     LEFT JOIN favorites ON favorites.post_id = posts.id
     GROUP BY posts.id, users.username
-    ORDER BY posts.priority DESC
+    ORDER BY posts.priority DESC, posts.id DESC
   `, [usetId]);
 
   return rows;
