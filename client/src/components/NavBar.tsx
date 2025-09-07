@@ -1,43 +1,30 @@
 import { Avatar, Skeleton } from "antd";
 import { UserOutlined } from '@ant-design/icons'
-import { useAuth } from "../hooks/useAuth";
+import { useAuth, type User } from "../hooks/useAuth";
 import LogOut from "./LogOut";
 import { useNavigate } from "react-router";
+import DropDown from "./DropDown";
 
 const NavBar = () => {
     const { user, loading } = useAuth();
     const navigate = useNavigate()
 
-    const NavSkeleton = () => {
-      return (
-        <nav className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
+    console.log(loading)
 
-              <div className="flex-shrink-0">
-                <Skeleton.Input active size="small" style={{ width: 100 }} />
-              </div>
-
-              <div className="hidden md:flex space-x-8">
-                <Skeleton.Input active size="small" style={{ width: 60 }} />
-                <Skeleton.Input active size="small" style={{ width: 60 }} />
-              </div>
-
-              <div className="flex items-center gap-3">
-                <Skeleton.Input active size="small" style={{ width: 120 }} />
-                <Skeleton.Avatar active size="large" shape="circle" />
-              </div>
-
-            </div>
-          </div>
-        </nav>
-      );
-};
-
-    if (loading) return <NavSkeleton/>;
+    const gotoLogIn = () => {
+      navigate("/user/log-in")
+    } 
 
     const handleClick = () => {
       navigate("/board")
+    }
+
+    const greetingUser = (user: User | null) => {
+      return (user ? (
+              <p>Привет, {user.username}!</p>
+            ) : (
+              <p>Не зарегистрирован</p>
+            ))
     }
     
     return (
@@ -52,17 +39,13 @@ const NavBar = () => {
             <div className="hidden md:flex space-x-8">
               <a href="#" className="text-gray-600 hover:text-gray-900">Board</a>
             </div>
-            {user ? (
-              <p>Привет, {user.username}!</p>
-            ) : (
-              <p>Ты не залогинен</p>
-            )}
-            
+
+            {!loading ? (greetingUser(user)) : (<Skeleton.Input active size="small" style={{ width: 60 }} />)}
+
             <div className="flex-shrink-0">
-              <LogOut/>
-              <Avatar size="large" icon={<UserOutlined />} />
+              {user ? <LogOut/> : <button onClick={gotoLogIn}>Log in</button>}
+              <DropDown avatar={<Avatar size="large" icon={<UserOutlined />} />}/>
             </div>
-            
           </div>
         </div>
       </nav>
