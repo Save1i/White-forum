@@ -1,5 +1,5 @@
-import { Avatar, Skeleton } from "antd";
-import { UserOutlined } from '@ant-design/icons'
+import { Avatar, Skeleton, type MenuProps } from "antd";
+import { SettingOutlined, UserOutlined } from '@ant-design/icons'
 import { useAuth, type User } from "../hooks/useAuth";
 import LogOut from "./LogOut";
 import { useNavigate } from "react-router";
@@ -7,9 +7,34 @@ import DropDown from "./DropDown";
 
 const NavBar = () => {
     const { user, loading } = useAuth();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
+    const items: MenuProps['items'] = [
+      {
+        key: '1',
+        label: 'My Account',
+        onClick: () => navigate('/user/4')
+      },
+      {
+        type: 'divider',
+      },
+      {
+        key: '2',
+        label: 'Profile',
+      },
+      {
+        key: '3',
+        label: 'Billing',
+      },
+      {
+        key: '4',
+        label: 'Settings',
+        icon: <SettingOutlined />,
+      },
+    ];
 
     console.log(loading)
+    console.log(user)
 
     const gotoLogIn = () => {
       navigate("/user/log-in")
@@ -19,7 +44,7 @@ const NavBar = () => {
       navigate("/board")
     }
 
-    const greetingUser = (user: User | null) => {
+    const greetingUser = (user: User | undefined) => {
       return (user ? (
               <p>Привет, {user.username}!</p>
             ) : (
@@ -44,7 +69,7 @@ const NavBar = () => {
 
             <div className="flex-shrink-0">
               {user ? <LogOut/> : <button onClick={gotoLogIn}>Log in</button>}
-              <DropDown avatar={<Avatar size="large" icon={<UserOutlined />} />}/>
+              <DropDown avatar={<Avatar size="large" icon={<UserOutlined />} />} items={items}/>
             </div>
           </div>
         </div>
