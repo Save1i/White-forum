@@ -151,8 +151,7 @@ async function messageGetById(userId: number, postId: number) {
 }
 
 async function messageDeleteById(id: number) {
-    const rows = await sql.query("DELETE FROM posts WHERE id=$1", [id]);
-    return rows
+    await sql.query("DELETE FROM posts WHERE id=$1", [id]);
 }
 
 async function messagePost(title: string, content: string, id: number, priority: number = 0) {
