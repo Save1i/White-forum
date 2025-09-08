@@ -7,7 +7,7 @@ export type User = {
 };
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export function useAuth() {
           setUser(response.data);
         } catch (err) {
           console.error("Ошибка при получении пользователя:", err);
-          setUser(null);
+          setUser(undefined);
         } finally {
           setLoading(false);
         }
