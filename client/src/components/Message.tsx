@@ -1,11 +1,12 @@
 import { Avatar, Card, Button, Tooltip, Tag } from "antd";
-import { UserOutlined, LikeOutlined, StarOutlined, FireOutlined, StarFilled, LikeFilled } from '@ant-design/icons';
+import { UserOutlined, LikeOutlined, StarOutlined, FireOutlined, StarFilled, LikeFilled, DeleteOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from "react-router";
 import type { Msg } from "../types";
 import axios from "axios";
 import { useState } from "react";
+import { message as antdMessage } from "antd";
 
-const Message = ({ message }: { message: Msg }) => {
+const Message = ({ message, fetchMessages }: { message: Msg, fetchMessages: () => void }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -57,14 +58,41 @@ const Message = ({ message }: { message: Msg }) => {
     });
   }
 
+  const deleteMessage = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    axios.delete(`${import.meta.env.VITE_API_URL}board/${message.id}`,
+      {withCredentials: true}
+    ).then(response => {
+      console.log(response.data)
+        antdMessage.success("Пост успешно удален");
+        fetchMessages()
+    }).catch(err => {
+      console.error("Ошибка при удалении поста:", err);
+      antdMessage.error("Ошибка при удалении поста");
+    });
+  }
+
   return (
       <Card
         className="w-2xs md:w-2xl cursor-pointer"
         onClick={handleClick}
         title={
-          <div className="flex items-center gap-3">
-            <Avatar size="large" icon={<UserOutlined />} />
-            <span className="font-semibold">{message.username}</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Avatar size="large" icon={<UserOutlined />} />
+              <span className="font-semibold text-lg">{message.username}</span>
+            </div>
+            <Tooltip title="Удалить">
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteMessage(e);
+                }}
+              />
+            </Tooltip>
           </div>
         }
         actions={[
