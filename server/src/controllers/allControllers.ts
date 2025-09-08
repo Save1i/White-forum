@@ -148,8 +148,28 @@ async function getMessageById(req: Request, res: Response) {
 async function deleteMessageById(req: Request, res: Response) {
   try {
     const { id } = req.params;
+    const session = req.session as PassportSession;
+    const userId = session.passport?.user as number;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Вы не авторизованы" });
+    }
+
+    const messages = await query.messageGetById(userId, Number(id));
+    const message = messages[0]
+    
+    if (message.user_id !== userId) {
+      return res.status(404).json({ error: "Сообщение не найдено" });
+    }
+
+    if (message.user_id !== userId && (req.user as any)?.role !== "admin") {
+      return res.status(403).json({ error: "Нет прав на удаление" });
+    }
+
+
     await query.messageDeleteById(Number(id));
-    res.json({ success: true, id });
+
+    return res.json({ success: true, id });
   } catch (error) {
     console.error("Error deleting post:", error);
     return res.status(500).json({ error: "Server error" });
