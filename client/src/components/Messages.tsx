@@ -36,7 +36,7 @@ const Messages = ({messages, fetchMessages}: {messages: Msg[] | null, fetchMessa
     <div className="flex flex-col items-center justify-start w-full min-h-screen pt-3 gap-5">
       {messages
         ? messages.map((message: Msg) => (
-            <Message key={message.id} message={message} />
+            <Message key={message.id} message={message} fetchMessages={fetchMessages} />
           ))
         : skeletons}
     </div>
