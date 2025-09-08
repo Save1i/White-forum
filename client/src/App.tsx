@@ -1,4 +1,4 @@
-import Board from "./components/Board"
+import Board from "./pages/Board"
 import NavBar from "./components/NavBar"
 
 
