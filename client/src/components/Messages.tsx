@@ -1,6 +1,5 @@
-import axios from "axios"
 import Message from "./Message"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import type { Msg } from "../types";
 import { Skeleton, Card, Tooltip } from "antd";
 
@@ -34,7 +33,7 @@ const Messages = ({messages, fetchMessages}: {messages: Msg[] | null, fetchMessa
     </Card>
   ))
   return (
-    <div className="flex flex-col items-center justify-start w-full min-h-screen pt-10 gap-5">
+    <div className="flex flex-col items-center justify-start w-full min-h-screen pt-3 gap-5">
       {messages
         ? messages.map((message: Msg) => (
             <Message key={message.id} message={message} />
