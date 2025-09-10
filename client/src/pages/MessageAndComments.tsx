@@ -3,16 +3,19 @@ import Comments from "../components/Comments"
 import Message from "../components/Message"
 import NavBar from "../components/NavBar"
 import axios from "axios"
-import { useParams } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import { Skeleton, Card, Tooltip } from "antd"
 import WriteComment from "../components/WriteComment"
 import type { Msg } from "../types"
+import { fetchMessages } from "../http/board"
 
 const MessageAndComments = () => {
   const { postId } = useParams<{ postId: string }>();
 
   const [message, setMessage] = useState<Msg | null>(null)
   const [newComment, setNewComment] = useState(false)
+
+  const navigate = useNavigate()
 
   const fetchMessage = () => {
     axios.get(`${import.meta.env.VITE_API_URL}board/${postId}`, {
@@ -56,7 +59,7 @@ const MessageAndComments = () => {
     <>
       <NavBar />
       <div className="flex items-center justify-start w-full flex-col pt-10">
-        {message ? <Message message={message} /> : skeletonM}
+        {message ? <Message message={message} fetchMessages={() => navigate('/board')} /> : skeletonM}
         <WriteComment postId={postId} setSendComment={setNewComment} />
       </div>
       <Comments postId={postId} newComment={newComment} />
