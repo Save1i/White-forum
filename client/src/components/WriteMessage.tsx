@@ -7,7 +7,6 @@ import { useState } from "react";
 const WriteMessage = ({ onSuccess }: { onSuccess: () => void }) => {
       const [content, setContent] = useState("");
       const [title, setTitle] = useState("");
-      const [loading, setLoading] = useState(false);
 
      const handleSubmit = async (data: { title: string; content: string }) => {
         try {
@@ -27,10 +26,11 @@ const WriteMessage = ({ onSuccess }: { onSuccess: () => void }) => {
       <div className="flex items-start gap-3 mb-8">
             <Avatar size="large" icon={<UserOutlined />} className="shrink-0"/>
         <div className="flex flex-col w-full gap-3">
-            <Input placeholder="Заголовок" value={title} onChange={(e) => setTitle(e.target.value)}/>
+            <Input placeholder="Заголовок" value={title} onChange={(e) => setTitle(e.target.value)} required/>
             <TextArea
                 placeholder="Сообщение"
                 value={content}
+                required
                 showCount
                 maxLength={100}
                 onChange={(e) => setContent(e.target.value)}
@@ -42,7 +42,6 @@ const WriteMessage = ({ onSuccess }: { onSuccess: () => void }) => {
         <Button 
           type="primary" 
           onClick={() => handleSubmit({title: title, content: content})} 
-          loading={loading}
           disabled={!content.trim()}
         >
           Отправить
