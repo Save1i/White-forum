@@ -7,7 +7,6 @@ import { useNavigate, useParams } from "react-router"
 import { Skeleton, Card, Tooltip } from "antd"
 import WriteComment from "../components/WriteComment"
 import type { Msg } from "../types"
-import { fetchMessages } from "../http/board"
 
 const MessageAndComments = () => {
   const { postId } = useParams<{ postId: string }>();
