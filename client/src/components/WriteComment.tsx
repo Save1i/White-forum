@@ -36,7 +36,7 @@ const WriteComment = ({ postId, setSendComment }: { postId: string | undefined, 
       placeholder="Введите ваш комментарий..."
       value={comment}
       showCount
-      maxLength={100}
+      maxLength={1000}
       onChange={(e) => setComment(e.target.value)}
       style={{ height: 60, resize: 'none' }}
     />
