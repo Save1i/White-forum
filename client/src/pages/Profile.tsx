@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Form, Input, Button, Card, message } from "antd";
 import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
-import { useNavigate } from "react-router";
 import NavBar from "../components/NavBar";
 
 type User = {
@@ -15,19 +14,8 @@ type User = {
   role: string;
 };
 
-const initialUser: User = {
-  id: 2,
-  name: "Иван Петров",
-  username: "1",
-  email: "ivan@example.com",
-  address: "Москва, ул. Ленина 10",
-  password_hash: "1",
-  role: "admin",
-};
-
 const Profile = () => {
-    const { user, loading } = useAuth();
-    const navigate = useNavigate()
+    const { user } = useAuth();
 
       const [form] = Form.useForm<User>();
 
@@ -36,8 +24,6 @@ const Profile = () => {
             form.setFieldsValue(user); // обновляем поля, когда user изменился
             }
         }, [user, form]);
-
-    // const [userInfo, setUserInfo] = useState<User | undefined>(user);
 
     const handleSubmit = async (values: User) => {
         try {
