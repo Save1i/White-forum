@@ -18,4 +18,13 @@ export type Comm = {
     post_id: number; 
     user_id: number;
     username: string;
-}; 
+};
+
+export type User = {
+  id: number;
+  username: string;
+  email: string;
+  name: string;
+  adress: string;
+  role: 'admin' | 'user'
+}
