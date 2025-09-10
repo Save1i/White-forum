@@ -15,6 +15,9 @@ const Message = ({ message, fetchMessages }: { message: Msg, fetchMessages: () =
 
   const [favorite, setFavorite] = useState(message.favorited_by_user);
   const [favoriteCount, setFavoriteCount] = useState(message.favorite_count ?? 0);
+  const [priorityCount, setPriorityCount] = useState(message.priority ?? 0);
+
+  console.log(message)
 
   const handleClick = () => {
     const target = `/board/${message.id}/comments`;
@@ -47,7 +50,7 @@ const Message = ({ message, fetchMessages }: { message: Msg, fetchMessages: () =
       {}, // empty body
       {withCredentials: true}
     ).then(response => {
-      console.log(response.data)
+      console.log(response.data, "f")
 
       const { favorited_by_user, favorite_count } = response.data;
 
@@ -55,6 +58,22 @@ const Message = ({ message, fetchMessages }: { message: Msg, fetchMessages: () =
       setFavoriteCount(favorite_count);
     }).catch(err => {
       console.error("Ошибка при добавлении в избранное:", err);
+    });
+  }
+
+  const togglePriority = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    axios.post(`${import.meta.env.VITE_API_URL}board/${message.id}/priority`, 
+      {}, // empty body
+      {withCredentials: true}
+    ).then(response => {
+      console.log(response.data, 'p')
+
+      const { newPriority } = response.data;
+
+      setPriorityCount(newPriority)
+    }).catch(err => {
+      console.error("Ошибка при добавлении приоритета:", err);
     });
   }
 
@@ -118,8 +137,8 @@ const Message = ({ message, fetchMessages }: { message: Msg, fetchMessages: () =
             </div>
           </Tooltip>,
           <Tooltip title="Приоритет" key="priority">
-            <Tag color="red" icon={<FireOutlined />}>
-              {message.priority ?? 0}
+            <Tag color="red" icon={<FireOutlined />} onClick={togglePriority}>
+              <span>{priorityCount ?? 0}</span>
             </Tag>
           </Tooltip>,
         ]}
