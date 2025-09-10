@@ -1,6 +1,7 @@
 import allControllers from "src/controllers/allControllers"
 import {Router} from "express"
 import passport from "passport"
+import { checkRole } from "@/middleware/checkRole"
 
 const router = Router()
 
@@ -28,7 +29,7 @@ router.get("/me", (req, res) => {
   res.status(401).json({ message: "Not authenticated" });
 });
 router.get("/:id", allControllers.getOneUserById);       
-router.put("/:id", allControllers.updateUser);
+router.put("/:id",checkRole("admin"), allControllers.updateUser);
 router.get("/", allControllers.getAllUsers);
 
 
