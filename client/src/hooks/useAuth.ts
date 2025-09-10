@@ -1,10 +1,15 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export type User = {
+export interface User {
   id: number;
+  name: string;
   username: string;
-};
+  email: string;
+  password_hash: string;
+  role: "admin" | "user";
+  address: string;
+}
 
 export function useAuth() {
   const [user, setUser] = useState<User | undefined>(undefined);
