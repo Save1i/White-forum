@@ -222,7 +222,37 @@ async function toggleFavorite(postId: number, userId: number) {
     [postId, userId]
   );
 
-  return rows[0];
+  return rows[0]
+}
+
+async function togglePriority(postId: number) {
+  // Ищем пост только по id
+  const result = await sql.query(
+    "SELECT id, user_id, priority FROM posts WHERE id = $1",
+    [postId]
+  );
+
+  if (!result || result.length === 0) {
+    throw new Error("Пост не найден");
+  }
+
+  const post = result[0];
+
+  const currentPriority = post.priority;
+
+  let newPriority: number;
+  if (currentPriority === 0) {
+    newPriority = 1;
+  } else {
+    newPriority = currentPriority - 1;
+  }
+
+  await sql.query(
+    "UPDATE posts SET priority = $1 WHERE id = $2",
+    [newPriority, postId]
+  );
+
+  return { newPriority };
 }
 
 
@@ -240,5 +270,5 @@ export default {
     commentGet,
     messageDeleteById,
     updateUser,
-
+    togglePriority
 }
