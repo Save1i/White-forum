@@ -9,7 +9,7 @@ declare global {
       password_hash: string;
       name: string;
       address: string;
-      role: string;
+      role: "admin" | "user";
     }
   }
 }
