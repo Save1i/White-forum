@@ -34,6 +34,8 @@ async function updateUser(req: Request, res: Response) {
     const { id } = req.params;
     const { email, password, name, address, role } = req.body;
 
+    console.log(req.body)
+
     if (!id) {
       return res.status(400).json({ error: "Missing user id" });
     }
@@ -232,6 +234,21 @@ async function toggleFavorite(req: Request, res: Response) {
   }
 }
 
+async function togglePriority(req: Request, res: Response) {
+  try {
+    const { postId } = req.params;
+
+    const result = await query.togglePriority(
+      Number(postId));
+
+    res.json(result);
+  } catch (error) {
+    console.error("Error toggling priority:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+}
+
+
 export default {
   createUser,
   updateUser,
@@ -249,4 +266,5 @@ export default {
 
   toggleLike,
   toggleFavorite,
+  togglePriority,
 };
