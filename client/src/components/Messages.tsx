@@ -5,10 +5,6 @@ import { Skeleton, Card, Tooltip } from "antd";
 
 const Messages = ({messages, fetchMessages}: {messages: Msg[] | null, fetchMessages: () => void}) => {
   useEffect(() => {
-    fetchMessages();
-  }, [fetchMessages]);
-
-  useEffect(() => {
     fetchMessages()
   }, [])
 
