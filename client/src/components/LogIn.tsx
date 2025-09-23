@@ -2,13 +2,16 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
-import { Input, Button, Card, Typography, message as antdMessage } from "antd";
-import { UserOutlined, LockOutlined, LoginOutlined } from "@ant-design/icons";
+import { Input, Button, Form, Card, Typography, message as antdMessage } from "antd";
+import { UserOutlined, LockOutlined, LoginOutlined, MailOutlined } from "@ant-design/icons";
+import { logIn, register } from "../api/auth";
 
 const { Title, Text } = Typography;
 
 const LogIn = () => {
+  const [isRegistration, setIsRegistration] = useState(false)
   const [username, setUsername] = useState("");
+  const [email, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -19,18 +22,20 @@ const LogIn = () => {
     console.log("WOWOWOWOWO")
 
     try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}user/log-in`,
-        { username, password },
-        { withCredentials: true }
+      if (isRegistration) {
+        await register(username, email, password);
+        antdMessage.success("Регистрация прошла успешно!");
+        setIsRegistration(false);
+      } else {
+        await logIn(username, password);
+        antdMessage.success("Добро пожаловать!");
+        navigate("/board");
+      }
+    } catch (err) {
+      console.error(err);
+      antdMessage.error(
+        isRegistration ? "Ошибка при регистрации" : "Неверные данные для входа"
       );
-
-      console.log("Login success:", res.data);
-      antdMessage.success("Добро пожаловать!");
-      navigate("/board");
-    } catch (err: any) {
-      console.error("Login error:", err);
-      antdMessage.error("Неверные данные для входа");
     } finally {
       setLoading(false);
     }
@@ -42,7 +47,7 @@ const LogIn = () => {
         className="shadow-2xl rounded-2xl w-[350px]"
       >
         <div className="text-center mb-6">
-          <Title level={3}>Log In</Title>
+          <Title level={3}>{isRegistration ? "Register" : "Log In"}</Title>
           <Text type="secondary">Введите данные для входа</Text>
         </div>
 
@@ -55,6 +60,17 @@ const LogIn = () => {
             onChange={(e) => setUsername(e.target.value)}
             className="rounded-lg"
           />
+          {
+            isRegistration && 
+          <Input
+            size="large"
+            placeholder="Email"
+            prefix={<MailOutlined />}
+            value={email}
+            onChange={(e) => setUserEmail(e.target.value)}
+            className="rounded-lg"
+          />
+          }
           <Input.Password
             size="large"
             placeholder="Password"
@@ -64,16 +80,29 @@ const LogIn = () => {
             className="rounded-lg"
           />
 
-          <Button
-            type="primary"
-            size="large"
-            htmlType="submit"
-            loading={loading}
-            icon={<LoginOutlined />}
-            className="mt-2 rounded-xl hover:scale-105 transition-transform"
-          >
-            Войти
-          </Button>
+          <Form.Item>
+            <Button
+              block
+              type="primary"
+              size="large"
+              htmlType="submit"
+              loading={loading}
+              icon={<LoginOutlined />}
+              className="mt-2 rounded-xl hover:scale-105 transition-transform"
+            >
+              {isRegistration ? "Registration" : "Log in"}
+            </Button>
+            or {
+              isRegistration ? <a href="#" onClick={(e)=>{
+              e.preventDefault();
+              setIsRegistration(isReg=>!isReg)
+            }}>Login</a> : 
+              <a href="#" onClick={(e)=>{
+              e.preventDefault();
+              setIsRegistration(isReg=>!isReg)
+            }}>Register</a>
+            }
+          </Form.Item>
         </form>
       </Card>
     </div>
