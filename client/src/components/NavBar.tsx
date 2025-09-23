@@ -90,10 +90,6 @@ const NavBar = () => {
             <div className="flex-shrink-0">
               <p className="text-xl font-bold text-gray-800 cursor-pointer" onClick={handleClick}>WForum</p>
             </div>
-            
-            <div className="hidden md:flex space-x-8">
-              <a href="#" className="text-gray-600 hover:text-gray-900">Board</a>
-            </div>
 
             {!loading ? (greetingUser(user)) : (<Skeleton.Input active size="small" style={{ width: 60 }} />)}
 
