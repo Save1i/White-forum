@@ -9,20 +9,20 @@ interface PassportSession {
 
 async function createUser(req: Request, res: Response) {
   try {
-    const { username, email, password, name, address, role } = req.body;
+    const { username, email, password, name, address } = req.body;
 
     if (!username || !email || !password) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    await query.insertUser(username, email, password, name, address, role);
+    await query.insertUser(username, email, password, name, address);
 
     return res.status(201).json({ username,
       email,
       password,
       name,
-      address,
-      role });
+      address
+    });
   } catch (error) {
     console.error("Error creating user:", error);
     return res.status(500).json({ error: "Server error" });
