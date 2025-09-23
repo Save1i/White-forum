@@ -1,4 +1,4 @@
-import { Button, Form, Input, message} from "antd"
+import { Button, Form, Input, message, Select} from "antd"
 import axios from "axios";
 import { useEffect } from "react";
 import type { User } from "../types";
@@ -58,6 +58,20 @@ const ChangeUserForm = ({user, onSuccess, closeForm} : {user: User, onSuccess: F
             rules={[{ required: true }]}
         >
             <Input.Password />
+        </Form.Item>
+
+        <Form.Item
+            label="Роль"
+            name="role"
+            rules={[{ required: true, message: "Введите роль" }]}
+        >
+        <Select
+        defaultValue="User"
+        options={[
+            { value: 'user', label: 'User' },
+            { value: 'admin', label: 'Admin' }
+        ]}
+        />
         </Form.Item>
 
         <Form.Item style={{ marginBottom: 0 }}>
