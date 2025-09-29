@@ -1,7 +1,7 @@
 import allControllers from "src/controllers/allControllers"
 import {Router} from "express"
 import passport from "passport"
-import { checkRole } from "@/middleware/checkRole"
+import { checkRole } from "../middleware/checkRole"
 
 const router = Router()
 

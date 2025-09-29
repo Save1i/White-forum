@@ -5,7 +5,7 @@ import { Pool } from 'pg';
 import session from "express-session"
 import passport from "passport"
 import { Strategy as LocalStrategy } from 'passport-local';
-import queries from "@/queries/queries";
+import queries from "./src/queries/queries";
 import {config} from "dotenv"
 import cors from "cors"
 
