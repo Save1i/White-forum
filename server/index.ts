@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express"
-import router from "@/routes/index"
+import router from "./src/routes/index"
 import pgSession from "connect-pg-simple";
 import { Pool } from 'pg';
 import session from "express-session"
