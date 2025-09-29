@@ -1,6 +1,6 @@
 import { checkRole } from "../middleware/checkRole";
 import { Router } from "express";
-import allControllers from "src/controllers/allControllers";
+import allControllers from "../controllers/allControllers";
 
 const router = Router();
 
