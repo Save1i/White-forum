@@ -1,4 +1,4 @@
-import { checkRole } from "@/middleware/checkRole";
+import { checkRole } from "../middleware/checkRole";
 import { Router } from "express";
 import allControllers from "src/controllers/allControllers";
 
