@@ -2,10 +2,10 @@
   "name": "whiteform",
   "version": "1.0.0",
   "main": "index.ts",
-  "scripts": {
-    "dev": "tsx watch -r tsconfig-paths/register ./server.ts",
-    "build": "tsc && tsc-alias"
-  },
+"scripts": {
+  "build": "tsc && tsc-alias",
+  "start": "node dist/index.js"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -21,7 +21,6 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "ts-node-dev": "^2.0.0",
-    "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
@@ -33,6 +32,7 @@
     "@types/node": "^24.3.0",
     "@types/passport": "^1.0.17",
     "@types/passport-local": "^1.0.38",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2"
   }
